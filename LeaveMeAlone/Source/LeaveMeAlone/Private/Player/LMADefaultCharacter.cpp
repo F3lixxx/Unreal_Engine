@@ -66,6 +66,9 @@ void ALMADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 	PlayerInputComponent->BindAxis("Move_Forward", this, &ALMADefaultCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move_Right", this, &ALMADefaultCharacter::MoveRight);
+
+	PlayerInputComponent->BindAxis("ZoomCamera", this, &ALMADefaultCharacter::ZoomCamera);
+
 }
 
 void ALMADefaultCharacter::MoveForward(float Value)
@@ -77,4 +80,20 @@ void ALMADefaultCharacter::MoveRight(float Value)
 {
 	AddMovementInput(GetActorRightVector(), Value);
 }
+
+void ALMADefaultCharacter::ZoomCamera(float Val)
+{
+	if (Val != 0.0f)
+	{
+		CurZoomDis -= Val * ZoomSpeed;
+		
+		CurZoomDis = FMath::Clamp(CurZoomDis, MinZoomDis, MaxZoomDis);
+		
+		if (SpringArmComponent)
+		{
+			SpringArmComponent->TargetArmLength = CurZoomDis;
+		}
+	}
+}
+
 

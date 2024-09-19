@@ -3,8 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-//#include "Camera/CameraComponent.h" 
-//#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Character.h"
 #include "LMADefaultCharacter.generated.h" 
 
@@ -20,21 +18,26 @@ public:
 	ALMADefaultCharacter();
 
 protected:
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USpringArmComponent* SpringArmComponent;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UCameraComponent* CameraComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
 	UDecalComponent* CurrentCursor = nullptr;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
 	UMaterialInterface* CursorMaterial = nullptr;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Cursor")
 	FVector CursorSize = FVector(20.0f, 40.0f, 40.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	float ZoomSpeed = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
+	float MinZoomDis = 300.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
+	float MaxZoomDis = 1000.0f;
 
 	virtual void BeginPlay() override;
 
@@ -50,6 +53,10 @@ private:
 	
 	float FOV = 55.0f;
 
+	float CurZoomDis = 600.0f;
+
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+
+	void ZoomCamera(float Val);
 };
