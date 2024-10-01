@@ -1,4 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -6,6 +5,9 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "LeaveMeAloneCharacter.generated.h"
+#include "Blueprint/UserWidget.h"
+#include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -44,10 +46,20 @@ class ALeaveMeAloneCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	// Класс виджета меню паузы (подключаем его из Blueprint'ов)
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+
+	// Текущий виджет меню паузы
+	UUserWidget* PauseMenuWidget;
+
+	// Метод для возобновления игры
+	void ResumeGame();
+
 public:
 	ALeaveMeAloneCharacter();
-	
 
+	void PauseMenu();
+	
 protected:
 
 	/** Called for movement input */

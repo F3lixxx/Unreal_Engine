@@ -29,6 +29,13 @@ ALMADefaultCharacter::ALMADefaultCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
+
+	MaxStamina = 100.0f;
+	Stamina = MaxStamina;
+	StaminaDrainRate = 10.0f;
+	StaminaRegenRate = 5.0f;
+	bIsSprinting = false;
+	bCanSprint = true;
 }
  
 void ALMADefaultCharacter::BeginPlay()
@@ -55,9 +62,27 @@ void ALMADefaultCharacter::Tick(float DeltaTime)
 		if (CurrentCursor)
 		{
 			CurrentCursor->SetWorldLocation(ResultHit.Location);
-		}
-	
+		}	
 	}
+
+	if (bIsSprinting && Stamina > 0)
+	{
+		Stamina -= StaminaDrainRate * DeltaTime;
+		if (Stamina <= 0)
+		{
+			Stamina = 0;
+			StopSprinting();
+		}
+		else if (!bIsSprinting && Stamina < MaxStamina)
+		{
+			Stamina += StaminaRegenRate * DeltaTime;
+			if (Stamina > MaxStamina)
+			{
+				Stamina = MaxStamina;
+			}
+		}
+	}
+	bCanSprint = (Stamina > 0);
 }
 
 void ALMADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -69,6 +94,22 @@ void ALMADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 	PlayerInputComponent->BindAxis("ZoomCamera", this, &ALMADefaultCharacter::ZoomCamera);
 
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ALMADefaultCharacter::StartSprinting);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ALMADefaultCharacter::StopSprinting);
+	//PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &ALMADefaultCharacter::PauseMenu);
+}
+
+void ALMADefaultCharacter::StartSprinting()
+{
+	if (Stamina > 0 && bCanSprint)
+	{
+		bIsSprinting = true;
+	}
+}
+
+void ALMADefaultCharacter::StopSprinting()
+{
+	bIsSprinting = false;
 }
 
 void ALMADefaultCharacter::MoveForward(float Value)
@@ -79,6 +120,10 @@ void ALMADefaultCharacter::MoveForward(float Value)
 void ALMADefaultCharacter::MoveRight(float Value)
 {
 	AddMovementInput(GetActorRightVector(), Value);
+}
+
+void ALMADefaultCharacter::PauseMenu(float Value)
+{
 }
 
 void ALMADefaultCharacter::ZoomCamera(float Val)
@@ -95,5 +140,3 @@ void ALMADefaultCharacter::ZoomCamera(float Val)
 		}
 	}
 }
-
-

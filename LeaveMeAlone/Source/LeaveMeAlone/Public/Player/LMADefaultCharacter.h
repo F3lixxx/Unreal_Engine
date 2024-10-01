@@ -33,10 +33,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	float ZoomSpeed = 100.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	float MinZoomDis = 300.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	float MaxZoomDis = 1000.0f;
 
 	virtual void BeginPlay() override;
@@ -57,6 +57,17 @@ private:
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+	void PauseMenu(float Value);
 
 	void ZoomCamera(float Val);
+
+	void StartSprinting();
+	void StopSprinting();
+
+	bool bIsSprinting;
+	float Stamina;
+	float MaxStamina;
+	float StaminaDrainRate;
+	float StaminaRegenRate;
+	bool bCanSprint;
 };

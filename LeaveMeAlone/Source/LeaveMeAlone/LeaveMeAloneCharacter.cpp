@@ -13,8 +13,29 @@
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
-//////////////////////////////////////////////////////////////////////////
-// ALeaveMeAloneCharacter
+void ALeaveMeAloneCharacter::ResumeGame()
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
+	{
+		// Убираем виджет с экрана
+		if (PauseMenuWidget)
+		{
+			PauseMenuWidget->RemoveFromViewport();
+			PauseMenuWidget = nullptr;
+		}
+
+		// Возвращаем управление игроком
+		FInputModeGameOnly InputMode;
+		PlayerController->SetInputMode(InputMode);
+
+		// Выключаем курсор мыши
+		PlayerController->bShowMouseCursor = false;
+
+		// Снимаем паузу
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+	}
+}
 
 ALeaveMeAloneCharacter::ALeaveMeAloneCharacter()
 {
@@ -53,6 +74,43 @@ ALeaveMeAloneCharacter::ALeaveMeAloneCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
+
+void ALeaveMeAloneCharacter::PauseMenu()
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController)
+	{
+		// Проверяем, не на паузе ли уже игра
+		if (!UGameplayStatics::IsGamePaused(GetWorld()))
+		{
+			// Ставим игру на паузу
+			UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+			// Создаем виджет меню паузы, если его ещё нет
+			/*if (PauseMenuWidgetClass)
+			{
+				PauseMenuWidget = CreateWidget<UUserWidget>(PlayerController, PauseMenuWidgetClass);*/
+				if (PauseMenuWidget)
+				{
+					PauseMenuWidget->AddToViewport();
+
+					// Переключаем ввод на UI, чтобы игрок мог взаимодействовать с виджетом
+					FInputModeUIOnly InputMode;
+					InputMode.SetWidgetToFocus(PauseMenuWidget->TakeWidget());
+					PlayerController->SetInputMode(InputMode);
+
+					// Включаем курсор мыши
+					PlayerController->bShowMouseCursor = true;
+				}
+			}
+		}
+		else
+		{
+			// Если игра уже на паузе, мы возобновляем её
+			ResumeGame();
+		}
+	}
+//}
 
 void ALeaveMeAloneCharacter::BeginPlay()
 {
